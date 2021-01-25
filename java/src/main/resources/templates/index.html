@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Plaid & Stripe POC</title>
+    <link rel="stylesheet" href="https://threads.plaid.com/threads.css" />
+
+    <link rel="stylesheet" type="text/css" href="./static/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+
+  <body>
+    <main class="main">
+      <div class="grid">
+        <div class="grid__column grid__column--is-twelve-columns">
+          <div id="banner" class="everpresent-content">
+            <h1 class="everpresent-content__heading">Plaid & Stripe POC</h1>
+            <p id="intro" class="everpresent-content__subheading">
+              An example application that outlines an end-to-end integration
+              with Stripe & Plaid
+            </p>
+            <p id="steps" class="everpresent-content__subheading">
+              Success! You just created an Item by linking your account.
+            </p>
+          </div>
+
+          <div id="container" class="initial-view">
+            <p class="initial-view__description">
+              Click the button below to open a list of Institutions. After you
+              select one, you’ll be guided through an authentication process. If
+              using the default Sandbox environment, use username
+              <strong>user_good</strong> and password
+              <strong>pass_good</strong>. Upon completion, a
+              <code>public_token</code> will be passed back to the server and
+              exchanged for <code>access_token</code>.
+            </p>
+
+            <button id="link-btn" class="button button--is-primary" disabled>
+              Connect with Plaid
+            </button>
+            <button id="link-button">Link Account</button>
+            <div class="loading-indicator"></div>
+          </div>
+
+          <div id="app" class="connected-view">
+            <div class="item-overview">
+              <div class="item-overview__column">
+                <h3 class="item-overview__heading">item_id</h3>
+                <p class="item-overview__id" id="item_id">
+                  san.asjsansakjsakjasjksajkas
+                </p>
+              </div>
+              <div class="item-overview__column">
+                <h3 class="item-overview__heading">access_token</h3>
+                <p class="item-overview__id" id="access_token">
+                  ••••••••hsakjsl
+                </p>
+              </div>
+              <div style="clear: both;"></div>
+            </div>
+            <div class="item-overview">
+              <div class="item-overview__column">
+                <h3 class="item-overview__heading">plaid_account_id</h3>
+                <p class="item-overview__id" id="plaid_account_id">
+                  san.asjsansakjsakjasjksajkas
+                </p>
+              </div>
+              <div class="item-overview__column">
+                <h3 class="item-overview__heading">stripe_account_id</h3>
+                <p class="item-overview__id" id="stripe_account_id">
+                  ••••••••hsakjsl
+                </p>
+              </div>
+              <div style="clear: both;"></div>
+            </div>
+
+            <p>
+              Now that you have an access_token you can make all of the
+              following API requests:
+            </p>
+
+            <div class="box">
+              <h3 class="box__heading">Products</h3>
+
+              <!-- Balance -->
+              <div class="item-data-row">
+                <div class="item-data-row__left">
+                  <div class="item-data-row__request-type">post</div>
+                </div>
+                <div class="item-data-row__center">
+                  <div class="item-data-row__nicename">Balance</div>
+                  <div class="item-data-row__endpoint">
+                    /accounts/balance/get
+                  </div>
+                  <div class="item-data-row__description">
+                    Check balances in real time to prevent non-sufficient funds
+                    fees.
+                  </div>
+                </div>
+                <div class="item-data-row__right">
+                  <button
+                    id="get-balance-btn"
+                    class="button button--is-small button--is-default button--is-full-width"
+                  >
+                    Send request
+                  </button>
+                </div>
+                <div class="item-data-row__response">
+                  <table>
+                    <tbody id="get-balance-data"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Stripe Bank Token -->
+              <div class="item-data-row">
+                <div class="item-data-row__left">
+                  <div class="item-data-row__request-type">post</div>
+                </div>
+                <div class="item-data-row__center">
+                  <div class="item-data-row__nicename">Bank Token</div>
+                  <div class="item-data-row__endpoint">
+                    /processor/stripe/bank_account_token/create
+                  </div>
+                  <div class="item-data-row__description">
+                    Stripe bank account token along with the Plaid [access_token] to
+                    use for other Plaid API requests.
+                  </div>
+                </div>
+                <div class="item-data-row__right">
+                  <button
+                    id="create-bank-token-btn"
+                    class="button button--is-small button--is-default button--is-full-width"
+                  >
+                    Send request
+                  </button>
+                </div>
+                <div class="item-data-row__response">
+                  <table>
+                    <tbody id="create-bank-token-data"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Stripe Bank Account -->
+              <div class="item-data-row">
+                <div class="item-data-row__left">
+                  <div class="item-data-row__request-type">post</div>
+                </div>
+                <div class="item-data-row__center">
+                  <div class="item-data-row__nicename">Attach Source</div>
+                  <div class="item-data-row__endpoint">
+                    /create/bank/account
+                  </div>
+                  <div class="item-data-row__description">
+                    Attach the generated plaid token [btok_] to a stripe customer.
+                  </div>
+                </div>
+                <div class="item-data-row__right">
+                  <button
+                          id="create-bank-account-btn"
+                          class="button button--is-small button--is-default button--is-full-width"
+                  >
+                    Send request
+                  </button>
+                </div>
+                <div class="item-data-row__response">
+                  <table>
+                    <tbody id="create-bank-account-data"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="box">
+              <h3 class="box__heading">Item management</h3>
+
+              <div class="item-data-row">
+                <div class="item-data-row__left">
+                  <div class="item-data-row__request-type">post</div>
+                </div>
+                <div class="item-data-row__center">
+                  <div class="item-data-row__endpoint">/accounts/get</div>
+                  <div class="item-data-row__description">
+                    Retrieve high-level information about all accounts
+                    associated with an Item.
+                  </div>
+                </div>
+
+                <div class="item-data-row__right">
+                  <button
+                    id="get-accounts-btn"
+                    class="button button--is-small button--is-default button--is-full-width"
+                  >
+                    Send request
+                  </button>
+                </div>
+
+                <div class="item-data-row__response">
+                  <table>
+                    <tbody id="get-accounts-data"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+    <script>
+      function render_page($, page_info) {
+        // Handles redirect from the oauth response page for the oauth flow.
+        if (
+          document.referrer != null &&
+          document.referrer.includes(
+            "http://localhost:8000/oauth-response.html"
+          ) &&
+          page_info.item_id != null &&
+          page_info.item_id.length > 0
+        ) {
+          $("#container").fadeOut("fast", function () {
+            $("#item_id").text(page_info.item_id);
+            $("#access_token").text(page_info.access_token);
+            $("#intro").hide();
+            $("#app, #steps").fadeIn("slow");
+          });
+        }
+
+        var products = page_info.products;
+        if (products.includes("assets")) {
+          $("#assets").show();
+        }
+        // This functionality is only relevant for the UK Payment Initiation product.
+        if (products.includes("payment_initiation")) {
+          $(".payment_initiation").show();
+          $.post("/api/create_link_token_for_payment", {}, function (data) {
+            if (data.error != null) {
+              $(".loading-indicator").hide();
+              displayError($("#container"), data.error);
+              return;
+            }
+            localStorage.setItem("link_token", data.link_token);
+            // In the case of payment_initiation product, we need to wait for a
+            // link token configured with payment initiation to be generated before
+            // the Link handler can be initialized.
+            handler = Plaid.create({
+              token: data.link_token,
+              onSuccess: function (public_token) {
+                // This public token exchange step is not relevant for the
+                // payment_initiation product and should be skipped.
+                $.post(
+                  "/api/set_access_token",
+                  {
+                    public_token: public_token
+                  },
+                  function (data) {
+                    $("#container").fadeOut("fast", function () {
+                      $("#item_id").text(data.item_id);
+                      $("#access_token").text(data.access_token);
+                      $("#intro").hide();
+                      $("#app, #steps").fadeIn("slow");
+                    });
+                  }
+                );
+              }
+            });
+            $("#link-btn").attr("disabled", false);
+            $(".loading-indicator").hide();
+          });
+        } else {
+          var handler = null;
+          $.post("/api/create_link_token", {}, function (data) {
+            if (data.error != null) {
+              $(".loading-indicator").hide();
+              displayError($("#container"), data.error);
+              return;
+            }
+            localStorage.setItem("link_token", data.link_token);
+            handler = Plaid.create({
+              token: data.link_token,
+              onSuccess: function (public_token) {
+                $.post(
+                  "/api/set_access_token",
+                  {
+                    public_token: public_token
+                  },
+                  function (data) {
+                    $("#container").fadeOut("fast", function () {
+                      $("#item_id").text(data.item_id);
+                      $("#access_token").text(data.access_token);
+                      $("#plaid_account_id").text(data.plaid_account_id);
+                      $("#intro").hide();
+                      $("#app, #steps").fadeIn("slow");
+                    });
+                  }
+                );
+              }
+            });
+            $("#link-btn").attr("disabled", false);
+            $(".loading-indicator").hide();
+          });
+        }
+
+        var accessToken = qs("access_token");
+        if (accessToken != null && accessToken !== "") {
+          $.post(
+            "/api/set_access_token",
+            {
+              access_token: accessToken
+            },
+            function (data) {
+              $("#container").fadeOut("fast", function () {
+                $("#item_id").text(data.item_id);
+                $("#access_token").text(accessToken);
+                $("#intro").hide();
+                $("#app, #steps").fadeIn("slow");
+              });
+            }
+          );
+        }
+
+        $("#link-btn").on("click", function (e) {
+          if (handler != null) {
+            handler.open();
+          }
+        });
+
+        $("#get-accounts-btn").on("click", function (e) {
+          $.get("/api/accounts", function (data) {
+            $("#get-accounts-data").slideUp(function () {
+              if (data.error != null) {
+                displayError(this, data.error);
+                return;
+              }
+              var html =
+                "<tr><td><strong>Name</strong></td><td><strong>Balances</strong></td><td><strong>Subtype</strong></td><td><strong>Mask</strong></td></tr>";
+              data.accounts.forEach(function (account, idx) {
+                html += "<tr>";
+                html += "<td>" + account.name + "</td>";
+                html +=
+                  "<td>$" +
+                  (account.balances.available != null
+                    ? account.balances.available
+                    : account.balances.current) +
+                  "</td>";
+                html += "<td>" + account.subtype + "</td>";
+                html += "<td>" + account.mask + "</td>";
+                html += "</tr>";
+              });
+
+              $(this).html(html).slideDown();
+            });
+          });
+        });
+
+        $("#get-balance-btn").on("click", function (e) {
+          $.get("/api/balance", function (data) {
+            $("#get-balance-data").slideUp(function () {
+              if (data.error != null) {
+                displayError(this, data.error);
+                return;
+              }
+              var html =
+                "<tr><td><strong>Name</strong></td><td><strong>Balance</strong></td><td><strong>Subtype</strong></td><td><strong>Mask</strong></td></tr>";
+              data.accounts.forEach(function (account, idx) {
+                html += "<tr>";
+                html += "<td>" + account.name + "</td>";
+                html +=
+                  "<td>$" +
+                  (account.balances.available != null
+                    ? account.balances.available
+                    : account.balances.current) +
+                  "</td>";
+                html += "<td>" + account.subtype + "</td>";
+                html += "<td>" + account.mask + "</td>";
+                html += "</tr>";
+              });
+
+              $(this).html(html).slideDown();
+            });
+          });
+        });
+
+        $("#create-bank-token-btn").on("click", function (e) {
+          // var public_token = localStorage.getItem('link_token');
+          // $.post(
+          //   "/api/create_stripe_token",
+          //   {
+          //     public_token: public_token
+          //   },
+          //   function (data) {
+          //   $("#create-bank-token-data").slideUp(function () {
+          //     if (data.error != null) {
+          //       displayError(this, data.error);
+          //       return;
+          //     }
+          //     var html =
+          //             "<tr><td><strong>Title</strong></td><td><strong>Value</strong></td></tr>";
+          //     html += "<tr>";
+          //     html += "<td>Bank Account Token</td>";
+          //     html += "<td>" + data + "</td>";
+          //     html += "</tr>";
+          //
+          //     $(this).html(html).slideDown();
+          //   });
+          // });
+          $.get("/api/create_stripe_token", function (data) {
+            $("#create-bank-token-data").slideUp(function () {
+              if (data.error != null) {
+                displayError(this, data.error);
+                return;
+              }
+              var html =
+                      "<tr><td><strong>Title</strong></td><td><strong>Value</strong></td></tr>";
+              html += "<tr>";
+              html += "<td>Bank Account Token</td>";
+              html += "<td>" + data.bank_account_token + "</td>";
+              html += "</tr>";
+
+              $(this).html(html).slideDown();
+            });
+          });
+        });
+
+        $("#create-bank-account-btn").on("click", function (e) {
+          $.post(
+            "/api/create_stripe_account",
+            {
+            },
+            function (data) {
+            $("#create-bank-account-data").slideUp(function () {
+              if (data.error != null) {
+                displayError(this, data.error);
+                return;
+              }
+              var html =
+                      "<tr><td><strong>Plaid Account Id</strong></td><td><strong>Stripe Account Id</strong></td></tr>";
+              html += "<tr>";
+              html += "<td>" + data.plaid_account_id + "</td>";
+              html += "<td>" + data.stripe_account_id + "</td>";
+              html += "</tr>";
+
+              $(this).html(html).slideDown();
+            });
+          });
+          // $.get("/api/create_stripe_token", function (data) {
+          //   $("#create-bank-token-data").slideUp(function () {
+          //     if (data.error != null) {
+          //       displayError(this, data.error);
+          //       return;
+          //     }
+          //     var html =
+          //             "<tr><td><strong>Title</strong></td><td><strong>Value</strong></td></tr>";
+          //     html += "<tr>";
+          //     html += "<td>Bank Account Token</td>";
+          //     html += "<td>" + data.bank_account_token + "</td>";
+          //     html += "</tr>";
+          //
+          //     $(this).html(html).slideDown();
+          //   });
+          // });
+        });
+
+        $("#get-assets-btn").on("click", function (e) {
+          $.get("/api/assets", function (data) {
+            $("#get-assets-data").slideUp(function () {
+              if (data.error != null) {
+                displayError(this, data.error);
+                return;
+              }
+              var reportData = data.json;
+              var html = `
+          <tr>
+            <td><strong>Account</strong></td>
+            <td><strong>Balance</strong></td>
+            <td><strong># Transactions</strong></td>
+            <td><strong># Days Available</strong></td>
+          </tr>`;
+              reportData.items.forEach(function (item, itemIdx) {
+                item.accounts.forEach(function (account, accountIdx) {
+                  html += "<tr>";
+                  html += "<td>" + account.name + "</td>";
+                  html += "<td>$" + account.balances.current + "</td>";
+                  html += "<td>" + account.transactions.length + "</td>";
+                  html += "<td>" + account.days_available + "</td>";
+                  html += "</tr>";
+                });
+              });
+
+              $("#download-assets-pdf-btn")
+                .attr("href", `data:application/pdf;base64,${data.pdf}`)
+                .attr("download", "Asset Report.pdf")
+                .show();
+
+              $(this).html(html).slideDown();
+            });
+          });
+        });
+      }
+
+      $.post("/api/info", {}, function (result) {
+        render_page(jQuery, result);
+      });
+
+      function qs(key) {
+        key = key.replace(/[*+?^$.\[\]{}()|\\\/]/g, "\\$&"); // escape RegEx meta chars
+        var match = location.search.match(
+          new RegExp("[?&]" + key + "=([^&]+)(&|$)")
+        );
+        return match && decodeURIComponent(match[1].replace(/\+/g, " "));
+      }
+
+      function displayError(element, error) {
+        var html = `
+    <div class="alert alert-danger">
+      <p><strong>Error Code:</strong> ${error.error_code}</p>
+      <p><strong>Error Type:</strong> ${error.error_type}</p>
+      <p><strong>Error Message:</strong> ${
+        error.display_message == null
+          ? error.error_message
+          : error.display_message
+      }</p>
+      <div>Check out our <a href="https://plaid.com/docs/#errors-overview">errors documentation</a> for more information.</div>
+    </div>`;
+        $(element).html(html).slideDown();
+      }
+
+
+      (async function() {
+
+        const configs = {
+          // Pass the link_token generated in step 2.
+          token: localStorage.getItem('link_token'),
+          onLoad: function() {
+            // The Link module finished loading.
+          },
+          onSuccess: function(public_token, metadata) {
+            // The onSuccess function is called when the user has
+            // successfully authenticated and selected an account to
+            // use.
+            //
+            // When called, you will send the public_token
+            // and the selected account ID, metadata.accounts,
+            // to your backend app server.
+            //
+            // sendDataToBackendServer({
+            //   public_token: public_token,
+            //   account_id: metadata.accounts[0].id
+            // });
+            console.log('Public Token: --> ' + public_token);
+            console.log('Metadata Inf: --> ' + JSON.stringify(metadata));
+            switch (metadata.accounts.length) {
+              case 0:
+                // Select Account is disabled: https://dashboard.plaid.com/link/account-select
+                break;
+              case 1:
+                console.log('Customer-selected account ID: ' + metadata.accounts[0].id);
+                break;
+              default:
+                    // Multiple Accounts is enabled: https://dashboard.plaid.com/link/account-select
+                console.log('Multiple Accounts is enabled: https://dashboard.plaid.com/link/account-select');
+            }
+
+            $.post(
+              "/api/set_access_token",
+              {
+                public_token: public_token,
+                account_id: metadata.account_id,
+                institution_id: metadata.institution.institution_id
+              },
+              function (data) {
+                $("#container").fadeOut("fast", function () {
+                  $("#item_id").text(data.item_id);
+                  $("#access_token").text(data.access_token);
+                  $("#plaid_account_id").text(data.plaid_account_id);
+                  $("#stripe_account_id").text(data.stripe_account_id);
+                  $("#intro").hide();
+                  $("#app, #steps").fadeIn("slow");
+                });
+              }
+            )
+          },
+          onExit: async function(err, metadata) {
+            // The user exited the Link flow.
+            if (err != null) {
+              // The user encountered a Plaid API error
+              // prior to exiting.
+            }
+            // metadata contains information about the institution
+            // that the user selected and the most recent
+            // API request IDs.
+            // Storing this information can be helpful for support.
+          },
+        };
+
+        var linkHandler = Plaid.create(configs);
+
+        document.getElementById('link-button').onclick = function() {
+          linkHandler.open();
+        };
+      })();
+
+    </script>
+  </body>
+</html>
