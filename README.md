@@ -1,6 +1,5 @@
 # Plaid integration POC
 
-
 ##### Java
 
 ```
