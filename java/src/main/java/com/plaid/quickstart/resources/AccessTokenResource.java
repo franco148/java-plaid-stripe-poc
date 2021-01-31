@@ -44,6 +44,7 @@ public class AccessTokenResource {
     QuickstartApplication.itemID = itemResponse.body().getItemId();
     QuickstartApplication.accountId = accountId;
     QuickstartApplication.institutionId = institutionId;
+    
     LOG.info("public token: " + publicToken);
     LOG.info("access token: " + QuickstartApplication.accessToken);
     LOG.info("item ID: " + itemResponse.body().getItemId());
