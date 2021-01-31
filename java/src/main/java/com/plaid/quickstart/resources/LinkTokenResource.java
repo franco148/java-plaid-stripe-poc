@@ -38,15 +38,6 @@ public class LinkTokenResource {
   }
 
   @POST public LinkToken getLinkToken() throws IOException {
-//    Response<LinkTokenCreateResponse> response =
-//      this.plaidClient.service().linkTokenCreate(new LinkTokenCreateRequest(
-//        new LinkTokenCreateRequest.User("user-id"),
-//        "Plaid Quickstart",
-//        this.plaidProducts,
-//        this.countryCodes,
-//        "en"
-//      ).withRedirectUri(this.redirectUri)).execute();
-//    return new LinkToken(response.body().getLinkToken());
 
     Response<LinkTokenCreateResponse> response =
             this.plaidClient.service().linkTokenCreate(new LinkTokenCreateRequest(
